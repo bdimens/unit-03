@@ -17,3 +17,29 @@
     font-size: 1.5em;
     font-weight: bold;
 }
+
+.states {
+    fill: #FFF;
+    stroke: #CCC;
+    stroke-width: 2px;
+}
+
+.metros {
+    fill: rgb(182, 52, 52);
+    stroke: black;
+    stroke-width: 1;
+}
+
+.gratLines {
+    fill: none;
+    stroke: #999;
+    stroke-width: 1px;
+}
+
+.gratBackground {
+    fill: #D5E3FF;
+}
+
+.map {
+    border: medium solid #999;
+}
