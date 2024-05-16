@@ -2,7 +2,7 @@
 (function(){
 
     //pseudo-global variables
-    var attrArray = ["PTPER2018", "PTPER2019", "PTPER2020", "PTPER2021", "PTPER2022"]; //list of attributes
+    var attrArray = ["% 2018", "% 2019", "% 2020", "% 2021", "% 2022"]; //list of attributes
     var expressed = attrArray[0]; //initial attribute
 
     // begin script when window loads
@@ -23,10 +23,10 @@
         .range([463, 0])
         .domain([0, 14.5]);
 
-    // Example 1.3 line 4...set up choropleth map
+    // set up choropleth map
     function setMap() {
         // map frame dimensions
-        var width = window.innerWidth * 0.5,
+        var width = window.innerWidth * 0.4,
             height = 460;
 
         // create new svg container for the map
@@ -36,9 +36,9 @@
             .attr("width", width)
             .attr("height", height);
 
-        // Example 2.1 line 15...create Albers equal area conic projection centered on France
+        // create Albers equal area conic projection centered on Chicago
         var projection = d3.geoAlbers()
-            .center([5, 42.5]) // Center latitude for Chicago
+            .center([5, 42.5])
             .parallels([35, 45])
             .scale(1800)
             .translate([width / 2, height / 2]);
@@ -46,7 +46,7 @@
         var path = d3.geoPath()
             .projection(projection);
 
-        // use Promise.all to parallelize asynchronous data loading
+        // Promise.all to parallelize asynchronous data loading
         var promises = [];
         promises.push(d3.csv("data/metro_lab2_csv.csv")); // load attributes from csv
         promises.push(d3.json("data/statepolyg.topojson")); // load choropleth spatial data
@@ -58,11 +58,11 @@
 
             setGraticule(map, path);
 
-            // translate europe TopoJSON
+            // translate TopoJSONs
             var newstatepolys = topojson.feature(states, states.objects.statepolyg),
                 newmetropolys = topojson.feature(metros, metros.objects.metropolyg).features;
 
-            // add Europe countries to map
+            // add midwest states to map
             var states = map.append("path")
                 .datum(newstatepolys)
                 .attr("class", "states")
@@ -86,7 +86,7 @@
     }; // end of setMap()
 
     function setGraticule(map, path) {
-        // Example 2.6 line 1...create graticule generator
+        // create graticule generator
         var graticule = d3.geoGraticule()
             .step([5, 5]); // place graticule lines every 5 degrees of longitude and latitude
 
@@ -96,7 +96,7 @@
             .attr("class", "gratBackground") // assign class for styling
             .attr("d", path); // project graticule
 
-        // Example 2.6 line 5...create graticule lines
+        // create graticule lines
         var gratLines = map.selectAll(".gratLines") // select graticule elements that will be created
             .data(graticule.lines()) // bind graticule lines to each element to be created
             .enter() // create an element for each datum
@@ -107,7 +107,7 @@
 
     function joinData(newmetropolys, csvData) {
         // variables for data join
-        var attrArray = ["PTPER2018", "PTPER2019", "PTPER2020", "PTPER2021", "PTPER2022"];
+        var attrArray = ["% 2018", "% 2019", "% 2020", "% 2021", "% 2022"];
 
         // loop through csv to assign each set of csv attribute values to geojson region
        
@@ -115,10 +115,10 @@
         var csvRegion = csvData[i]; //the current region
         var csvKey = csvRegion.GEOID; //the CSV primary key
 
-        //loop through geojson regions to find correct region
+        //loop through geojson regions to find correct metro
         for (var a=0; a<newmetropolys.length; a++){
 
-            var geojsonProps = newmetropolys[a].properties; //the current region geojson properties
+            var geojsonProps = newmetropolys[a].properties; //the current metro geojson properties
             var geojsonKey = geojsonProps.GEOID; //the geojson primary key
 
             //where primary keys match, transfer csv data to geojson properties object
@@ -138,7 +138,7 @@
 };
 
 function setEnumerationUnits(newmetropolys, map, path, colorScale){
-    //add France regions to map
+    //add metro areas to map
     var metros = map.selectAll(".metros")
         .data(newmetropolys)
         .enter()
@@ -238,7 +238,7 @@ function createDropdown(csvData){
         .text(function(d){ return d });
 };
 
-//Example 1.4 line 14...dropdown change event handler
+//dropdown change event handler
 function changeAttribute(attribute, csvData){
     //change the expressed attribute
     expressed = attribute;
@@ -306,9 +306,9 @@ function setChart(csvData, colorScale) {
     //create a scale to size bars proportionally to frame and for axis
     var yScale = d3.scaleLinear()
         .range([chartInnerHeight, 0])
-        .domain([0, maxValue + (maxValue * 0.2)]); // add a bit of padding to the max value
+        .domain([0, maxValue + (maxValue * 0.2)]); // padding so it doesnt go out of bounds
 
-// Set bars for each province
+// Set bars for each area
 var bars = chart.selectAll(".bar")
     .data(csvData)
     .enter()
